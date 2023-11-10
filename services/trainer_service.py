@@ -180,7 +180,7 @@ class TrainerService:
                       labels,
                       descriptive_labels,
                       threshold,
-                      train_samples_set: set,
+                      train_samples: list,
                       train_batch_size=128,
                       max_seq_length=128,
                       num_epochs=1,
@@ -193,7 +193,7 @@ class TrainerService:
         :param labels: target dataset's default labels
         :param descriptive_labels: labels with description for finetune
         :param threshold: threshold for semantic search
-        :param train_samples_set: train samples for SBERT
+        :param train_samples: train samples for SBERT
         :param train_batch_size: train batch size
         :param max_seq_length: max sequence length
         :param num_epochs: number of epochs
@@ -232,7 +232,7 @@ class TrainerService:
                 if pred[0]["score"] >= threshold:
                     label = labels[pred[0]["corpus_id"]]
                     category = categories[category_index]
-                    train_samples_set.add((label, category))
+                    train_samples.append(InputExample(texts=[label, category]))
                 category_index += 1
 
         model.stop_multi_process_pool(pool)
@@ -240,8 +240,6 @@ class TrainerService:
         # endregion
 
         # region self-training finetune phase (based on pre-trained model)
-
-        train_samples = [InputExample(texts=[label, category]) for label, category in train_samples_set]
 
         self.train(
             model_name=pretrain_model_name_or_path,
@@ -254,7 +252,7 @@ class TrainerService:
 
         # endregion
 
-        return train_samples_set
+        return train_samples
 
     def self_training(self,
                       pretrain_model_name_or_path,
@@ -290,7 +288,7 @@ class TrainerService:
         self.logger.info("num_epochs: {}".format(num_epochs))
         self.logger.info("---------args---------")
 
-        train_samples_set = set()
+        train_samples = []
         model_name_or_path = pretrain_model_name_or_path
         dic = WikiManager.get_wiki_category_dict()
         categories = WikiManager.get_wiki_categories(dic)
@@ -299,24 +297,26 @@ class TrainerService:
             self.logger.info("----------------------")
             self.logger.info("iteration {}".format(i))
             self.logger.info("start")
-            self.logger.info("train_samples: {}".format(len(train_samples_set)))
+            self.logger.info("train_samples: {}".format(len(train_samples)))
 
             start = datetime.now()
             model_path = "{}/{}".format(model_save_path, i)
             self.logger.info("output model_path: {}".format(model_path))
 
-            train_samples_set = self.self_finetune(
+            samples = self.self_finetune(
                 pretrain_model_name_or_path=pretrain_model_name_or_path,
                 model_name_or_path=model_name_or_path,
                 model_save_path=model_path,
                 labels=labels,
                 descriptive_labels=descriptive_labels,
                 threshold=threshold,
-                train_samples_set=train_samples_set,
+                train_samples=train_samples,
                 train_batch_size=train_batch_size,
                 max_seq_length=max_seq_length,
                 num_epochs=num_epochs,
                 categories=categories)
+
+            train_samples.extend(samples)
 
             model_name_or_path = model_path
             self.logger.info("spent time: {}".format(datetime.now() - start))
