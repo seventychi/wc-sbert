@@ -198,7 +198,6 @@ class TrainerService:
         :param max_seq_length: max sequence length
         :param num_epochs: number of epochs
         :param categories: wiki categories
-        :return: train samples set for next iteration
         """
         if categories is None:
             dic = WikiManager.get_wiki_category_dict()
@@ -252,8 +251,6 @@ class TrainerService:
 
         # endregion
 
-        return train_samples
-
     def self_training(self,
                       pretrain_model_name_or_path,
                       model_save_path,
@@ -297,13 +294,14 @@ class TrainerService:
             self.logger.info("----------------------")
             self.logger.info("iteration {}".format(i))
             self.logger.info("start")
-            self.logger.info("train_samples: {}".format(len(train_samples)))
+            self.logger.info("input train_samples: {}".format(len(train_samples)))
 
             start = datetime.now()
             model_path = "{}/{}".format(model_save_path, i)
+
             self.logger.info("output model_path: {}".format(model_path))
 
-            samples = self.self_finetune(
+            self.self_finetune(
                 pretrain_model_name_or_path=pretrain_model_name_or_path,
                 model_name_or_path=model_name_or_path,
                 model_save_path=model_path,
@@ -316,9 +314,9 @@ class TrainerService:
                 num_epochs=num_epochs,
                 categories=categories)
 
-            train_samples.extend(samples)
-
             model_name_or_path = model_path
+
+            self.logger.info("output train_samples: {}".format(len(train_samples)))
             self.logger.info("spent time: {}".format(datetime.now() - start))
             self.logger.info("end")
             self.logger.info("----------------------")
