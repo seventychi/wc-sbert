@@ -122,7 +122,7 @@ class TrainerService:
             ir_queries,
             ir_corpus,
             ir_relevant_docs,
-            score_functions={"cos_sim": util.cos_sim},
+            # score_functions={"cos_sim": util.cos_sim},
             map_at_k=[3]
         )
 
@@ -294,6 +294,7 @@ class TrainerService:
             self.logger.info("----------------------")
             self.logger.info("iteration {}".format(i))
             self.logger.info("start")
+            self.logger.info("input model_name_or_path: {}".format(model_name_or_path))
             self.logger.info("input train_samples: {}".format(len(train_samples)))
 
             start = datetime.now()
@@ -314,10 +315,14 @@ class TrainerService:
                 num_epochs=num_epochs,
                 categories=categories)
 
-            model_name_or_path = model_path
-
             self.logger.info("output train_samples: {}".format(len(train_samples)))
             self.logger.info("spent time: {}".format(datetime.now() - start))
             self.logger.info("end")
             self.logger.info("----------------------")
+
+            model_name_or_path = model_path
+
+            # 每次都清空 train samples 重新訓練，並且使用最新的 model 來 inference
+            pretrain_model_name_or_path = model_path
+            train_samples = []
 

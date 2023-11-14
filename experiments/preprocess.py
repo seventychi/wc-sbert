@@ -36,7 +36,7 @@ def main():
 
     trainer_service.self_training(
         pretrain_model_name_or_path=CHECKPOINT,
-        model_save_path="../test_7",
+        model_save_path="../checkpoints/v2/agnews/11130945",
         labels=labels,
         descriptive_labels=descriptive_labels,
         threshold=0.8,

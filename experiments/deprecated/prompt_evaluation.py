@@ -11,7 +11,7 @@ from tqdm import tqdm
 def get_categories():
     categories = []
 
-    with open("../data/wiki_categories.json", "r", encoding="utf-8") as f:
+    with open("../../data/wiki_categories.json", "r", encoding="utf-8") as f:
         for line in tqdm(f, desc="categories"):
             data = json.loads(line)
             cate = data["categories"]
@@ -24,7 +24,7 @@ def get_categories():
 
 
 def get_embeddings(model, categories=None):
-    file = "../embeddings/all-mpnet-base-v2/wiki_category_embeddings.pkl"
+    file = "../../embeddings/all-mpnet-base-v2/wiki_category_embeddings.pkl"
 
     if os.path.exists(file):
         with open(file, "rb") as f:
@@ -85,7 +85,7 @@ def eval_agnews(model, agnews, categories, label_embeddings, category_embeddings
 
 
 def main():
-    model = SentenceTransformer("../checkpoints/all-mpnet-base-v2", device="cuda")
+    model = SentenceTransformer("../../checkpoints/all-mpnet-base-v2", device="cuda")
     agnews = load_dataset("ag_news")["test"]
 
     labels = ["This topic is talk about World",

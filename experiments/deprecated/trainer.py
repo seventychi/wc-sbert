@@ -19,7 +19,7 @@ from tqdm import tqdm
 
 
 def save_wiki_sentences_embeddings():
-    model = SentenceTransformer("../checkpoints/all-mpnet-base-v2", device="cuda")
+    model = SentenceTransformer("../../checkpoints/all-mpnet-base-v2", device="cuda")
     wiki_set = load_dataset("wikipedia", "20220301.en", split="train")
 
     sentences = []
@@ -44,7 +44,7 @@ def save_wiki_sentences_embeddings():
 def get_wiki_categories_dict():
     dic = {}
 
-    with open("../data/wiki_categories.json", "r", encoding="utf-8") as f:
+    with open("../../data/wiki_categories.json", "r", encoding="utf-8") as f:
         for line in tqdm(f, desc="wiki categories"):
             data = json.loads(line)
             dic[str(data["id"])] = data["categories"]
@@ -179,7 +179,7 @@ def train_wiki_pretrained_model():
 
     train(
         model_name="sentence-transformers/all-mpnet-base-v2",
-        model_save_path="../checkpoints/all-mpnet-base-v2",
+        model_save_path="../../checkpoints/all-mpnet-base-v2",
         train_samples=train_samples,
         use_no_duplicated_dataloader=True
     )
@@ -303,7 +303,7 @@ def main():
     finetune_with_agnews(
         eval_model_name="../checkpoints/agnews/all-mpnet-base-v2-iter1-base-0.8",
         finetune_model_name="../checkpoints/all-mpnet-base-v2",
-        model_save_path="../checkpoints/agnews/all-mpnet-base-v2-iter2-base-0.8",
+        model_save_path="../../checkpoints/agnews/all-mpnet-base-v2-iter2-base-0.8",
         threshold=0.8
     )
 
@@ -315,7 +315,7 @@ def main():
     finetune_with_yahoo(
         eval_model_name="../checkpoints/all-mpnet-base-v2",
         finetune_model_name="../checkpoints/all-mpnet-v2",
-        model_save_path="../checkpoints/yahoo/all-mpnet-base-v2-iter1-base-0.8"
+        model_save_path="../../checkpoints/yahoo/all-mpnet-base-v2-iter1-base-0.8"
     )
 
     # endregion
@@ -326,7 +326,7 @@ def main():
     finetune_with_dbpedia(
         eval_model_name="../checkpoints/all-mpnet-base-v2",
         finetune_model_name="../checkpoints/all-mpnet-base-v2",
-        model_save_path="../checkpoints/dbpedia/all-mpnet-base-v2-iter1-base-0.7",
+        model_save_path="../../checkpoints/dbpedia/all-mpnet-base-v2-iter1-base-0.7",
         threshold=0.7
     )
 
