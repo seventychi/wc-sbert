@@ -25,25 +25,27 @@ def fine_tune_agnews():
     descriptive_labels = [f"This topic is talk about {label}" for label in labels]
 
     # generate descriptive labels by gpt4
-    descriptive_labels = [
-        "Covers global news, international affairs, and events happening around the world, focusing on politics, culture, and global trends.",
-        "Dedicated to athletic activities, including coverage of sports events, athlete profiles, and analyses of various sports games and "
-        "competitions.",
-        "Focuses on the corporate sector, market trends, financial news, and economic policies impacting businesses and industries worldwide.",
-        "Deals with scientific discoveries, research updates, and insights into various fields like biology, physics, and environmental studies.",
-        "Centers on advancements in technology, including gadget reviews, tech industry developments, and the impact of new technologies on society."
-    ]
+    # descriptive_labels = [
+    #     "Covers global news, international affairs, and events happening around the world, focusing on politics, culture, and global trends.",
+    #     "Dedicated to athletic activities, including coverage of sports events, athlete profiles, and analyses of various sports games and "
+    #     "competitions.",
+    #     "Focuses on the corporate sector, market trends, financial news, and economic policies impacting businesses and industries worldwide.",
+    #     "Deals with scientific discoveries, research updates, and insights into various fields like biology, physics, and environmental studies.",
+    #     "Centers on advancements in technology, including gadget reviews, tech industry developments, and the impact of new technologies on society."
+    # ]
 
     trainer_service.self_training(
         pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
         model_save_path=MODEL_DIR,
         labels=labels,
         descriptive_labels=descriptive_labels,
-        threshold=0.82,
-        num_iterations=3,
-        train_batch_size=128,
+        threshold=0.8,
+        num_iterations=10,
+        train_batch_size=256,
         max_seq_length=128,
-        num_epochs=1)
+        num_epochs=10,
+        description="test batch size 256 and epoch 10"
+    )
 
 
 def fine_tune_yahoo():

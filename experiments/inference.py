@@ -26,14 +26,14 @@ def eval_agnews(eval_model_name):
     labels = ["This topic is talk about {}".format(label) for label in labels]
 
     # # generate descriptive labels by gpt4
-    labels = [
-        "Covers global news, international affairs, and events happening around the world, focusing on politics, culture, and global trends.",
-        "Dedicated to athletic activities, including coverage of sports events, athlete profiles, and analyses of various sports games and "
-        "competitions.",
-        "Focuses on the corporate sector, market trends, financial news, and economic policies impacting businesses and industries worldwide.",
-        "Deals with scientific discoveries, research updates, and insights into various fields like biology, physics, and environmental studies.",
-        "Centers on advancements in technology, including gadget reviews, tech industry developments, and the impact of new technologies on society."
-    ]
+    # labels = [
+    #     "Covers global news, international affairs, and events happening around the world, focusing on politics, culture, and global trends.",
+    #     "Dedicated to athletic activities, including coverage of sports events, athlete profiles, and analyses of various sports games and "
+    #     "competitions.",
+    #     "Focuses on the corporate sector, market trends, financial news, and economic policies impacting businesses and industries worldwide.",
+    #     "Deals with scientific discoveries, research updates, and insights into various fields like biology, physics, and environmental studies.",
+    #     "Centers on advancements in technology, including gadget reviews, tech industry developments, and the impact of new technologies on society."
+    # ]
 
     statistics = {}
 
@@ -165,7 +165,7 @@ def iterative_inference(task, inference_path):
 
 
 def main():
-    iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/11141317")
+    iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/11152050")
     # iterative_inference(task="yahoo", inference_path="../checkpoints/v2/yahoo/11131120")
     # iterative_inference(task="dbpedia", inference_path="../checkpoints/v2/dbpedia/11131431")
 

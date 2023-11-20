@@ -89,6 +89,7 @@ class TrainerService:
               model_name,
               model_save_path,
               train_samples,
+              loss_function="MultipleNegativesRankingLoss",
               use_no_duplicated_dataloader=False,
               train_batch_size=128,
               max_seq_length=128,
@@ -98,6 +99,7 @@ class TrainerService:
         :param model_name: SBERT model name
         :param model_save_path: model save path
         :param train_samples: train samples for SBERT
+        :param loss_function: loss function: MultipleNegativesRankingLoss, OnlineContrastiveLoss
         :param use_no_duplicated_dataloader: use NoDuplicatesDataLoader or not
         :param train_batch_size: train batch size
         :param max_seq_length: max sequence length
@@ -108,13 +110,20 @@ class TrainerService:
         word_embedding_model = models.Transformer(model_name, max_seq_length=max_seq_length)
         pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), pooling_mode='mean')
         model = SentenceTransformer(modules=[word_embedding_model, pooling_model], device="cuda:0")
-        train_loss = losses.MultipleNegativesRankingLoss(model)
 
-        # NoDuplicate 有 bug 可能會 fixed 住, 用在 wiki pre-trained model 上
-        if use_no_duplicated_dataloader:
-            train_dataloader = datasets.NoDuplicatesDataLoader(train_samples, batch_size=train_batch_size)
-        else:
+        if loss_function == "MultipleNegativesRankingLoss":
+            train_loss = losses.MultipleNegativesRankingLoss(model)
+
+            # NoDuplicate 有 bug 可能會 fixed 住, 用在 wiki pre-trained model 上
+            if use_no_duplicated_dataloader:
+                train_dataloader = datasets.NoDuplicatesDataLoader(train_samples, batch_size=train_batch_size)
+            else:
+                train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=train_batch_size)
+        elif loss_function == "OnlineContrastiveLoss":
+            train_loss = losses.OnlineContrastiveLoss(model)
             train_dataloader = DataLoader(train_samples, shuffle=True, batch_size=train_batch_size)
+        else:
+            raise Exception("loss function not found")
 
         warmup_steps = math.ceil(len(train_dataloader) * num_epochs * 0.1)  # 10% of train data for warm-up
 
@@ -231,7 +240,14 @@ class TrainerService:
                 if pred[0]["score"] >= threshold:
                     label = labels[pred[0]["corpus_id"]]
                     category = categories[category_index]
-                    train_samples.append(InputExample(texts=[label, category]))
+
+                    # positive sample
+                    train_samples.append(InputExample(texts=[label, category], label=1))
+
+                    # negative sample
+                    for negative_label in [nl for nl in labels if nl != label]:
+                        train_samples.append(InputExample(texts=[negative_label, category], label=0))
+                    # train_samples.append(InputExample(texts=[label, category]))
                 category_index += 1
 
         model.stop_multi_process_pool(pool)
@@ -244,6 +260,7 @@ class TrainerService:
             model_name=pretrain_model_name_or_path,
             model_save_path=model_save_path,
             train_samples=train_samples,
+            loss_function="OnlineContrastiveLoss",
             use_no_duplicated_dataloader=False,
             train_batch_size=train_batch_size,
             max_seq_length=max_seq_length,
@@ -260,7 +277,8 @@ class TrainerService:
                       num_iterations,
                       train_batch_size=128,
                       max_seq_length=128,
-                      num_epochs=1):
+                      num_epochs=1,
+                      description=""):
         """
         Self-training by SBERT
         :param pretrain_model_name_or_path: pre-trained model name or path for self-training
@@ -272,8 +290,10 @@ class TrainerService:
         :param train_batch_size: train batch size
         :param max_seq_length: max sequence length
         :param num_epochs: number of epochs
+        :param description: description for this time self-training model
         """
         self.logger.info("---------args---------")
+        self.logger.info("description: {}".format(description))
         self.logger.info("pretrain_model_name_or_path: {}".format(pretrain_model_name_or_path))
         self.logger.info("model_save_path: {}".format(model_save_path))
         self.logger.info("labels: {}".format(labels))

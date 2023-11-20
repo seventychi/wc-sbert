@@ -31,20 +31,6 @@ def main():
             model_name_or_path=CHECKPOINT,
             embeddings_save_path="{}/wiki_category_embeddings.h5".format(CHECKPOINT))
 
-    labels = ["World", "Sports", "Business", "Science", "Technology"]
-    descriptive_labels = [f"This topic is talk about {label}" for label in labels]
-
-    trainer_service.self_training(
-        pretrain_model_name_or_path=CHECKPOINT,
-        model_save_path="../checkpoints/v2/agnews/11130945",
-        labels=labels,
-        descriptive_labels=descriptive_labels,
-        threshold=0.8,
-        num_iterations=10,
-        train_batch_size=128,
-        max_seq_length=128,
-        num_epochs=1)
-
 
 if __name__ == "__main__":
     main()
