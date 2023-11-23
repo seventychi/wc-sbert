@@ -165,7 +165,7 @@ def iterative_inference(task, inference_path):
 
 
 def main():
-    iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/11152050")
+    iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/11221358")
     # iterative_inference(task="yahoo", inference_path="../checkpoints/v2/yahoo/11131120")
     # iterative_inference(task="dbpedia", inference_path="../checkpoints/v2/dbpedia/11131431")
 

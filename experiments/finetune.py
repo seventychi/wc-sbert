@@ -35,7 +35,8 @@ def fine_tune_agnews():
     # ]
 
     trainer_service.self_training(
-        pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
+        # pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
+        pretrain_model_name_or_path="../checkpoints/v2/agnews/11221156/9",
         model_save_path=MODEL_DIR,
         labels=labels,
         descriptive_labels=descriptive_labels,
@@ -43,8 +44,8 @@ def fine_tune_agnews():
         num_iterations=10,
         train_batch_size=256,
         max_seq_length=128,
-        num_epochs=10,
-        description="test batch size 256 and epoch 10"
+        num_epochs=1,
+        description=""
     )
 
 
