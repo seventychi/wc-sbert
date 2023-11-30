@@ -5,7 +5,7 @@ from datetime import datetime
 from services.trainer_service import TrainerService
 
 PRETRAINED_MODEL_CHECKPOINT = "../checkpoints/all-mpnet-base-v2"
-FINE_TUNE_TARGET = "agnews"  # agnews, yahoo, dbpedia
+FINE_TUNE_TARGET = "20newsgroups"  # agnews, yahoo, dbpedia 20newsgroups
 MODEL_DIR = "../checkpoints/v2/{}/{}".format(FINE_TUNE_TARGET, datetime.now().strftime("%m%d%H%M"))
 
 
@@ -35,13 +35,12 @@ def fine_tune_agnews():
     # ]
 
     trainer_service.self_training(
-        # pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
-        pretrain_model_name_or_path="../checkpoints/v2/agnews/11221156/9",
+        pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
         model_save_path=MODEL_DIR,
         labels=labels,
         descriptive_labels=descriptive_labels,
         threshold=0.8,
-        num_iterations=10,
+        num_iterations=20,
         train_batch_size=256,
         max_seq_length=128,
         num_epochs=1,
@@ -71,10 +70,11 @@ def fine_tune_yahoo():
         labels=labels,
         descriptive_labels=descriptive_labels,
         threshold=0.8,
-        num_iterations=10,
-        train_batch_size=128,
+        num_iterations=20,
+        train_batch_size=256,
         max_seq_length=128,
-        num_epochs=1)
+        num_epochs=1,
+        description="")
 
 
 def fine_tune_dbpedia():
@@ -90,9 +90,31 @@ def fine_tune_dbpedia():
         model_save_path=MODEL_DIR,
         labels=labels,
         descriptive_labels=descriptive_labels,
-        threshold=0.8,
-        num_iterations=10,
-        train_batch_size=128,
+        threshold=0.85,
+        num_iterations=20,
+        train_batch_size=256,
+        max_seq_length=128,
+        num_epochs=1)
+
+
+def fine_tune_20newsgroups():
+    trainer_service = TrainerService()
+
+    labels = ["alt.atheism", "comp.graphics", "comp.os.ms-windows.misc", "comp.sys.ibm.pc.hardware",
+              "comp.sys.mac.hardware", "comp.windows.x", "misc.forsale", "rec.autos", "rec.motorcycles",
+              "rec.sport.baseball", "rec.sport.hockey", "sci.crypt", "sci.electronics", "sci.med", "sci.space",
+              "soc.religion.christian", "talk.politics.guns", "talk.politics.mideast", "talk.politics.misc",
+              "talk.religion.misc"]
+    descriptive_labels = [f"This topic is talk about {label}" for label in labels]
+
+    trainer_service.self_training(
+        pretrain_model_name_or_path=PRETRAINED_MODEL_CHECKPOINT,
+        model_save_path=MODEL_DIR,
+        labels=labels,
+        descriptive_labels=descriptive_labels,
+        threshold=0.85,
+        num_iterations=20,
+        train_batch_size=512,
         max_seq_length=128,
         num_epochs=1)
 
@@ -109,6 +131,8 @@ def main():
         fine_tune_yahoo()
     elif FINE_TUNE_TARGET == "dbpedia":
         fine_tune_dbpedia()
+    elif FINE_TUNE_TARGET == "20newsgroups":
+        fine_tune_20newsgroups()
 
 
 if __name__ == "__main__":

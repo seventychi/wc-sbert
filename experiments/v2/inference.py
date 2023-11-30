@@ -3,14 +3,14 @@ from pathlib import Path
 from datasets import load_dataset
 from sentence_transformers import (
     SentenceTransformer,
-    util, InputExample
+    util
 )
 
 
 def inference(eval_model_name, queries, labels, top_k=1):
     model = SentenceTransformer(eval_model_name)
-    query_embeddings = model.encode(queries)
     label_embeddings = model.encode(labels)
+    query_embeddings = model.encode(queries)
 
     preds = util.semantic_search(query_embeddings, label_embeddings, top_k=top_k)
     evals = []
@@ -151,6 +151,32 @@ def eval_dbpedia(eval_model_name):
     return accuracy.compute(predictions=evals, references=refs)
 
 
+def eval_20newsgroups(eval_model_name):
+    labels = ["alt.atheism", "comp.graphics", "comp.os.ms-windows.misc", "comp.sys.ibm.pc.hardware",
+              "comp.sys.mac.hardware", "comp.windows.x", "misc.forsale", "rec.autos", "rec.motorcycles",
+              "rec.sport.baseball", "rec.sport.hockey", "sci.crypt", "sci.electronics", "sci.med", "sci.space",
+              "soc.religion.christian", "talk.politics.guns", "talk.politics.mideast", "talk.politics.misc",
+              "talk.religion.misc"]
+
+    labels = [f"This topic is talk about {label}" for label in labels]
+
+    test_set = load_dataset("SetFit/20_newsgroups")["test"]
+    refs = []
+    queries = []
+
+    for data in test_set:
+        refs.append(data["label"])
+        queries.append(data["text"])
+
+    evals = inference(
+        eval_model_name=eval_model_name,
+        queries=queries,
+        labels=labels)
+
+    accuracy = evaluate.load("accuracy")
+    return accuracy.compute(predictions=evals, references=refs)
+
+
 def iterative_inference(task, inference_path):
     inference_path = Path(inference_path)
     inference_dirs = [x for x in inference_path.iterdir() if x.is_dir()]
@@ -162,12 +188,15 @@ def iterative_inference(task, inference_path):
             print(inference_dir.name, eval_yahoo(inference_dir))
         elif task == "dbpedia":
             print(inference_dir.name, eval_dbpedia(inference_dir))
+        elif task == "20newsgroups":
+            print(inference_dir.name, eval_20newsgroups(inference_dir))
 
 
 def main():
-    iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/11221358")
-    # iterative_inference(task="yahoo", inference_path="../checkpoints/v2/yahoo/11131120")
-    # iterative_inference(task="dbpedia", inference_path="../checkpoints/v2/dbpedia/11131431")
+    # iterative_inference(task="agnews", inference_path="../checkpoints/v2/agnews/keep/11221156")
+    # iterative_inference(task="yahoo", inference_path="../checkpoints/v2/yahoo/11231052")
+    # iterative_inference(task="dbpedia", inference_path="../checkpoints/v2/dbpedia/11271358")
+    iterative_inference(task="20newsgroups", inference_path="../checkpoints/v2/20newsgroups/11282259")
 
 
 if __name__ == "__main__":
