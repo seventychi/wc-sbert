@@ -6,7 +6,7 @@ from langchain_core.messages import SystemMessage
 from langchain_core.prompts import HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from tqdm import tqdm
 
-MIRLAB_OPENAI_KEY = ""
+MIRLAB_OPENAI_KEY = "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"
 
 
 def inference(labels, query):

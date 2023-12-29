@@ -24,16 +24,10 @@ def inference(eval_model_name, queries, labels, top_k=1):
 def eval_agnews(eval_model_name):
     labels = ["World", "Sports", "Business", "Science", "Technology"]
     labels = ["This topic is talk about {}".format(label) for label in labels]
+    labels = [f"This article covers topics related to {label}" for label in labels]
 
-    # # generate descriptive labels by gpt4
-    # labels = [
-    #     "Covers global news, international affairs, and events happening around the world, focusing on politics, culture, and global trends.",
-    #     "Dedicated to athletic activities, including coverage of sports events, athlete profiles, and analyses of various sports games and "
-    #     "competitions.",
-    #     "Focuses on the corporate sector, market trends, financial news, and economic policies impacting businesses and industries worldwide.",
-    #     "Deals with scientific discoveries, research updates, and insights into various fields like biology, physics, and environmental studies.",
-    #     "Centers on advancements in technology, including gadget reviews, tech industry developments, and the impact of new technologies on society."
-    # ]
+    labels[0] += " not Business"
+    labels[2] += " not World"
 
     statistics = {}
 
@@ -79,6 +73,10 @@ def eval_yahoo(eval_model_name):
         "Family", "Relationships",
         "Politics", "Government"]
     labels = ["This topic is talk about {}".format(label) for label in labels]
+    labels = [f"This article covers topics related to {label}" for label in labels]
+
+    labels[0] += " not Family or Relationships"
+    labels[5] += " not Science or Mathematics"
 
     statistics = {}
 
@@ -129,7 +127,25 @@ def eval_dbpedia(eval_model_name):
         for y_idx, y_label in enumerate(labels):
             statistics[x_idx][y_idx] = 0
 
-    labels = [f"This topic is talk about {label}" for label in labels]
+    # labels = [f"This topic is talk about {label}" for label in labels]
+    labels = [f"This sentence is belong to {label}" for label in labels]
+    labels = [f"This article covers topics related to {label}" for label in labels]
+
+    labels[0] = "This topic is describing this company"
+    labels[1] = "This school, university described in this content is an education institution"
+    labels[2] = "This musician, painter, singer, writer, author described in this content is an artist"
+    labels[3] = "This person who plays sport described in this content is an athlete"
+    labels[4] = "This person who holds a position or office in a government described in this content is an officeholder"
+    labels[5] = "This vehicles, ridden, trains and other conveyances described in this content is transportation"
+    labels[6] = "This man-made structure described in this content is a building"
+    labels[7] = "This natural landforms, bodies of water, vegetation, rocks, forests, rivers, lakes, mountains, " \
+                "oceans, grasslands described in this content is a natural place"
+    labels[8] = "This town, small settlement or community described in this content is a village"
+    labels[9] = "This organism described in this content is an animal"
+    labels[10] = "This organism described in this content is a plant"
+    labels[11] = "This music or recorded tracks described in this content is an album"
+    labels[12] = "This movie described in this content is a film"
+    labels[13] = "This books, essays, poems or literatures described in this content is a written work"
 
     test_set = load_dataset("dbpedia_14")["test"]
     refs = []
@@ -144,8 +160,12 @@ def eval_dbpedia(eval_model_name):
         queries=queries,
         labels=labels)
 
-    for index, ref in enumerate(refs):
-        statistics[ref][evals[index]] += 1
+    # for index, ref in enumerate(refs):
+    #     statistics[ref][evals[index]] += 1
+    #
+    # # print confusion matrix
+    # for value in statistics.values():
+    #     print([str(v).rjust(4) for v in value.values()])
 
     accuracy = evaluate.load("accuracy")
     return accuracy.compute(predictions=evals, references=refs)
@@ -193,9 +213,18 @@ def iterative_inference(task, inference_path):
 
 
 def main():
-    iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/12030954")
-    # iterative_inference(task="yahoo", inference_path="../../checkpoints/v1_5/yahoo/11301649")
-    # iterative_inference(task="dbpedia", inference_path="../checkpoints/v2/dbpedia/11271358")
+    # best case
+    # iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/keep/threshold evaluation/12231537")
+    iterative_inference(task="yahoo", inference_path="../../checkpoints/v1_5/yahoo/keep/12240859")
+    # iterative_inference(task="dbpedia", inference_path="../../checkpoints/v1_5/dbpedia/12241052")
+
+    # iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/12231624")
+    # iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/12011127")
+    # iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/12030954")
+    # iterative_inference(task="agnews", inference_path="../../checkpoints/v1_5/agnews/12212111")
+    # iterative_inference(task="yahoo", inference_path="../../checkpoints/v1_5/yahoo/12212213")
+    # iterative_inference(task="yahoo", inference_path="../../checkpoints/v1_5/yahoo/12041014")
+    # iterative_inference(task="dbpedia", inference_path="../checkpoints/v1_5/dbpedia/11271358")
     # iterative_inference(task="20newsgroups", inference_path="../checkpoints/v2/20newsgroups/11282259")
 
 
