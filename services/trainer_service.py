@@ -134,6 +134,8 @@ class TrainerService:
         model = SentenceTransformer(model_name_or_path, device="cuda:0")
         pool = model.start_multi_process_pool()
 
+        start = datetime.now()
+
         # region self-training inference phase (aim to get train samples)
 
         descriptive_labels_embeddings = model.encode(descriptive_labels, convert_to_numpy=True)
@@ -169,6 +171,9 @@ class TrainerService:
 
         # endregion
 
+        self.logger.info("inference phase spent time: {}".format(datetime.now() - start))
+        start = datetime.now()
+
         # region self-training finetune phase (based on pre-trained model)
 
         self.train(
@@ -182,6 +187,8 @@ class TrainerService:
             num_epochs=num_epochs)
 
         # endregion
+
+        self.logger.info("finetune phase spent time: {}".format(datetime.now() - start))
 
     def train(self,
               model_name,
