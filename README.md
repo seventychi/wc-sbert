@@ -1,6 +1,6 @@
-# WC-SBERT: Zero-Shot Topic Classification Using SBERT and Self-Training with Wikipedia Categories
+# WC-SBERT: Zero-Shot Topic Classification Using SBERT and Light Self-Training on Wikipedia Categories
 
-This repository contains programs related to the research "WC-SBERT: Zero-Shot Topic Classification Using SBERT and Self-Training with Wikipedia Categories".
+This repository contains programs related to the research "WC-SBERT: Zero-Shot Topic Classification Using SBERT and Light Self-Training on Wikipedia Categories".
 
 ---
 
