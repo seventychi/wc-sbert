@@ -10,7 +10,7 @@ This repository contains programs related to the research "WC-SBERT: Zero-Shot T
 
 **Affiliation**: Dept. of CSIE, National Taiwan University, Taiwan
 
-**Paper URL**:
+**Paper URL**: http://dx.doi.org/10.1145/3678183
 
 **Cite**:
 
