@@ -24,7 +24,7 @@ This repository contains programs related to the research "WC-SBERT: Zero-Shot T
 
 ### Models and Data
 
-You can download the required models data for the system from [Google Drive](https://drive.google.com/file/d/1TL4tHie9PJupK3NYBAJ271SEm7ywdqEH/view?usp=drive_link). Please place the relevant files into the project root directory. Below is the detailed directory structure:
+You can download the required models data for the system from [Google Drive](https://drive.google.com/file/d/1GeztImmCY4-ewuYV-0M6s3iTKtKoVOHe/view?usp=drive_link). Please place the relevant files into the project root directory. Below is the detailed directory structure:
 
 **checkpoints**: Contains the WC-SBERT models for downstream tasks
 
